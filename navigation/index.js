@@ -17,22 +17,10 @@ const styles = StyleSheet.create({
 });
 
 class AuthLoadingScreen extends React.Component {
-  static getDerivedStateFromProps(props, state) {
-    const { initialFetch } = state;
-    const { isFetchingUserSettings, isFetchingWorkouts } = props;
-    if (!initialFetch && !isFetchingUserSettings && !isFetchingWorkouts) {
-      return {
-        initialFetch: true,
-      };
-    }
-    return null;
-  }
-
   constructor(props) {
     super(props);
     this.state = {
       userToken: null,
-      initialFetch: false,
       loading: true,
     };
     this.signOut = this.signOut.bind(this);
@@ -49,7 +37,6 @@ class AuthLoadingScreen extends React.Component {
         this.signIn(user);
       })
       .catch(() => {
-        // eslint-disable-next-line no-console
         console.log('err signing in');
       });
     this.setState({
@@ -60,22 +47,20 @@ class AuthLoadingScreen extends React.Component {
   async signOut() {
     await Auth.signOut()
       .catch((err) => {
-        // eslint-disable-next-line no-console
         console.log('ERROR: ', err);
       });
-    this.setState({ userToken: null, initialFetch: false });
+    this.setState({ userToken: null });
   }
 
   async signIn(user) {
     this.setState({
       userToken: user.signInUserSession.accessToken.jwtToken,
-      initialFetch: false,
     });
   }
 
   render() {
-    const { userToken, initialFetch, loading } = this.state;
-    const showLoadingSpinner = (!userToken && loading) || (userToken && !initialFetch);
+    const { userToken, loading } = this.state;
+    const showLoadingSpinner = (!userToken && loading);
     let view = '';
     if (showLoadingSpinner) {
       view = (
@@ -85,7 +70,7 @@ class AuthLoadingScreen extends React.Component {
       );
     } else if (!userToken) {
       view = <AuthNavigator signIn={this.signIn} />;
-    } else if (userToken && initialFetch) {
+    } else {
       view = <AppNavigator signOut={this.signOut} />;
     }
     return (
