@@ -115,7 +115,7 @@ export default function Home({ signOut }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Burger Nation Dashboard</Text>
+      <Text style={styles.text}>Burger Nations Dashboard</Text>
       <Text style={styles.text}>Today's Order - {todaysOrder.length}</Text>
       <View style={styles.header}>
 
